@@ -33,6 +33,9 @@ public class Prompt {
   @Column(name = "photo", nullable = false)
   private String photo;
 
+  @Column(name = "prompt", nullable = false)
+  private String prompt;
+
   @Column(name = "answer", nullable = false)
   private String answer;
 
