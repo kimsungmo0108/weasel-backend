@@ -30,10 +30,10 @@ dependencies {
     // 쿼리 파라미터 로그 찍는 라이브러리
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
 
-    // 로컬에서 돌리기 위한 데이터베이스
+    // 로컬에서 돌리기 위한 데이터베이스(h2 database)
     runtimeOnly 'com.h2database:h2'
 
-    // template
+    // template(thymeleaf)
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // springboot
@@ -48,7 +48,10 @@ dependencies {
     // 개발자 도구 템플릿 화면을 고치면 재시작 해야 하지만 이 라이브러리 덕분에 좀 더 수월하다
     // 빌드 => 다시 빌드 => 브라우저 가서 f5
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    
+
+    // myslq jdbc 라이브러리
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
     // 그 외 라이브러리
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'

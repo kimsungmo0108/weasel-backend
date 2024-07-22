@@ -1,12 +1,10 @@
 package exam.master.domain;
 
 import jakarta.persistence.*;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 @Entity
@@ -19,8 +17,10 @@ public class History {
   @Column(name = "history_id", nullable = false, updatable = false)
   private UUID historyId;
 
+  // fetch 란 history 테이블 정보를 select 했을 때 연관 테이블를 조인한다(기본 값일 때)
+  // LAZY로 했을 때 필요없는 테이블 정보를 빼고 하나의 테이블 정보만 select 하는 옵션
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id")
+  @JoinColumn(name = "member_id") // 외래 키 설정
   private Member member;
 
   @Column(name = "title", nullable = false)
@@ -29,21 +29,14 @@ public class History {
   @Column(name = "created_date")
   private LocalDateTime createdDate;
 
-  @OneToMany(mappedBy = "history")
+  // cascade 란 
+  // em.persist("promptA") em.persist("promptB") em.persist("promptC") em.persist("history") 3줄의 코드를
+  // em.persist("history")로 줄여주는 옵션
+  @OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
   private List<Prompt> prompts = new ArrayList<>();
 
   public History() {
     this.createdDate = LocalDateTime.now();
   }
-
-  //기본값 설정
-//  @PrePersist
-//  protected void onCreate() {
-//
-//    if (this.createdDate == null) {
-//      this.createdDate = Timestamp.valueOf(LocalDateTime.now()); // 현재 시간으로 기본값 설정
-//    }
-//
-//  }
 
 }
