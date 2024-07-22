@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 @Entity
 @Getter
@@ -20,7 +17,7 @@ public class Member {
   @Id
   @GeneratedValue(generator = "UUID")
   // @Column(name = "member_id", nullable = false, unique = true)
-  // UUID로 설정하게 되면 기본이 유니크 제야조건이 들어감
+  // UUID로 설정하게 되면 기본이 유니크 제약조건이 들어감
   // updatable = false => 수정을 방지
   @Column(name = "member_id", nullable = false, updatable = false)
   private UUID memberId;
@@ -39,7 +36,9 @@ public class Member {
   @Column(name = "profile_photo")
   private String profilePhoto;
 
-  @OneToMany(mappedBy = "member")
+  // mappedBy = "member" => 읽기 가능
+  // 단방향 + 단방향 접근이 가능하다 한 쪽을 막는 옵션이다
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
   private List<History> histories = new ArrayList<>();
 
   public Member() {
