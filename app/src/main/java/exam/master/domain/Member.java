@@ -22,7 +22,7 @@ public class Member {
   @Column(name = "member_id", nullable = false, updatable = false)
   private UUID memberId;
 
-  @Column(name = "email", nullable = false)
+  @Column(name = "email", nullable = false, unique = true)
   private String email;
 
   @Column(name = "password", nullable = false)
