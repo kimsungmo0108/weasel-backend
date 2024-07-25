@@ -1,2 +1,2 @@
 # weasel-backend
-Spring Boot
+Spring Boot3
