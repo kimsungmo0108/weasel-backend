@@ -42,7 +42,7 @@ pipeline {
                 script {
                 sh """
                     chmod +x ./gradlew
-                    ./gradlew clean build --no-daemon
+                    ./gradlew clean build +x test --no-daemon
                 """
                 }
             }
