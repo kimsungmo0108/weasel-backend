@@ -2,23 +2,35 @@ pipeline {
     agent any
 
     tools {
-        gradle 'Gradle'  
+        gradle 'Gradle'
     }
 
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPOSITORY = '393035689023.dkr.ecr.us-east-1.amazonaws.com'
-        IMAGE_REPO_NAME = "weasel-backend"
-        IMAGE_TAG = "latest"
-        REPOSITORY_URI = "393035689023.dkr.ecr.us-east-1.amazonaws.com/weasel-backend"
-        AWS_ACCOUNT_ID = "393035689023"
-        AWS_CREDENTIAL = "weasel-AWS-Credential"
+        IMAGE_REPO_NAME = 'weasel-backend'
+        IMAGE_TAG = 'latest'
+        REPOSITORY_URI = '393035689023.dkr.ecr.us-east-1.amazonaws.com/weasel-backend'
+        AWS_ACCOUNT_ID = '393035689023'
+        AWS_CREDENTIAL = 'weasel-AWS-Credential'
         GIT_URL = 'https://github.com/Team-S5T1/weasel-backend.git'
         SLACK_CHANNEL = '#alarm-jenkins'
         SLACK_CREDENTIALS_ID = 'weasel-slack-alarm'
     }
 
     stages {
+        stage('Send message to slack') {
+            steps {
+                script {
+                    slackSend(channel: SLACK_CHANNEL,
+                              message: "Jenkins pipeline started: ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_URL}",
+                              attachments: [[
+                                  color: '#0000ff',
+                                  text: 'Jenkins start!'
+                              ]])
+                }
+            }
+        }
         stage('Login to ECR') {
             steps {
                 script {
@@ -30,7 +42,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Cloning Git') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: "${GIT_URL}"]]])
@@ -40,22 +52,21 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                sh """
-                    chmod +x ./gradlew
-                    ./gradlew clean build -x test --no-daemon
-                """
+                    sh '''
+                        chmod +x ./gradlew
+                        ./gradlew clean build -x test --no-daemon
+                    '''
                 }
             }
         }
-        
+
         stage('Building image') {
-            steps{
+            steps {
                 script {
                         sh "docker build -t ${IMAGE_REPO_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
-
 
         stage('Pushing to ECR') {
             steps {
@@ -65,7 +76,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Delete Docker images') {
             steps {
                 script {
@@ -74,16 +85,31 @@ pipeline {
             }
         }
     }
-    
+
     post {
         success {
-            slackSend(channel: SLACK_CHANNEL, message: "Build succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_URL}")
+            slackSend(channel: SLACK_CHANNEL,
+                      message: "Build succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                      attachments: [[
+                          color: '#36a64f',
+                          text: 'Build succeeded successfully.'
+                      ]])
         }
         failure {
-            slackSend(channel: SLACK_CHANNEL, message: "Build failed: ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_URL}")
+            slackSend(channel: SLACK_CHANNEL,
+                      message: "Build failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                      attachments: [[
+                          color: '#ff0000',
+                          text: 'Build failed. Please check the details.'
+                      ]])
         }
         unstable {
-            slackSend(channel: SLACK_CHANNEL, message: "Build unstable: ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_URL}")
+            slackSend(channel: SLACK_CHANNEL,
+                      message: "Build unstable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                      attachments: [[
+                          color: '#f39c12',
+                          text: 'Build unstable. Please check the details.'
+                      ]])
         }
     }
 }
