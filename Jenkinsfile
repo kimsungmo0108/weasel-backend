@@ -9,7 +9,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         ECR_REPOSITORY = '393035689023.dkr.ecr.us-east-1.amazonaws.com'
         IMAGE_REPO_NAME = 'weasel-backend'
-        IMAGE_TAG = 'latest'
+        IMAGE_TAG = "weasel-backend-${env.BUILD_NUMBER}"
         REPOSITORY_URI = '393035689023.dkr.ecr.us-east-1.amazonaws.com/weasel-backend'
         AWS_ACCOUNT_ID = '393035689023'
         AWS_CREDENTIAL = 'weasel-AWS-Credential'
