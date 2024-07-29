@@ -98,9 +98,9 @@ pipeline {
 
                 sh "git config --global user.email ${GIT_MAIL}"
                 sh "git config --global user.name ${GIT_NAME}"
-                sh "sed -i 's@${REPOSITORY_URL}:.*@${REPOSITORY_URL}:${currentBuild.number}@g' weasel/backend/weasel-backend-deployment.yaml"
+                sh "sed -i 's@${REPOSITORY_URL}:.*@${REPOSITORY_URL}:${IMAGE_TAG}@g' weasel/backend/weasel-backend-deployment.yaml"
                 sh "git add ."
-                sh "git commit -m 'fix:${REPOSITORY_URL} ${currentBuild.number} image versioning'"
+                sh "git commit -m 'fix:${REPOSITORY_URL} ${IMAGE_TAG} image versioning'"
                 sh "git branch -M main"
                 sh "git remote remove origin"
                 sh "git remote add origin ${GIT_SSH_ADD}"
