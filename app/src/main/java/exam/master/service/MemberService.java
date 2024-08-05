@@ -1,6 +1,7 @@
 package exam.master.service;
 
 import exam.master.domain.Member;
+import exam.master.dto.MemberDTO;
 import exam.master.repository.HistoryRepository;
 import exam.master.repository.MemberRepository;
 import exam.master.status.MemberStatus;
@@ -76,5 +77,16 @@ public class MemberService {
     // 로그인 하면서 프롬프트 창으로 리다이렉트 하기 때문에 히스토리 리스트를 가져온다
     loginUser.setHistories(historyRepository.findAll(loginUser.getMemberId()));
     return loginUser;
+  }
+
+  public MemberDTO convertToDTO(Member member){
+    MemberDTO memberDTO = new MemberDTO();
+
+    memberDTO.setMemberId(member.getMemberId());
+    memberDTO.setStatus(member.getStatus());
+    memberDTO.setEmail(member.getEmail());
+    memberDTO.setProfilePhoto(member.getProfilePhoto());
+
+    return memberDTO;
   }
 }
