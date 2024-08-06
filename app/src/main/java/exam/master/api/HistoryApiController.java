@@ -30,7 +30,7 @@ public class HistoryApiController {
 //    Member loginUser = (Member) session.getAttribute("loginMember");
     Member loginUser = memberService.findByEmailAndPassword("kim@test", "1111");
 
-    int count = historyService.delete(historyId, loginUser.getMemberId());
+    int count = historyService.deleteHistory(historyId, loginUser.getMemberId());
 
     return ResponseEntity.ok(count);
   }

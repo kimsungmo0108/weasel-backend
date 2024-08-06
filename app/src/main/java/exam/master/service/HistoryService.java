@@ -18,7 +18,7 @@ public class HistoryService {
   private final HistoryRepository historyRepository;
 
   @Transactional
-  public int delete(UUID historyId, UUID memberId){
+  public int deleteHistory(UUID historyId, UUID memberId){
 
     // 유효성 검사
     History history = historyRepository.findOne(historyId);
@@ -28,7 +28,7 @@ public class HistoryService {
     if(memberId == history.getMember().getMemberId()){
       // 히스토리에 해당하는 모든 데이터 삭제
       count += promptRepository.deletePromptsByHistoryId(historyId);
-      count += historyRepository.delete(historyId);
+      count += historyRepository.deleteHistoryByHistoryId(historyId);
     }
 
     return count;

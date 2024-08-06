@@ -33,8 +33,7 @@ public class PromptApiController {
   public ResponseEntity<PromptDTO> add(@RequestBody PromptDTO promptDTO,
       @RequestParam(required = false) UUID historyId,
       @RequestParam(required = false) MultipartFile file,
-      HttpSession session)
-      throws Exception {
+      HttpSession session) {
 
 //    Member loginUser = (Member) session.getAttribute("loginMember");
     Member loginUser = memberService.findByEmailAndPassword("kim@test", "1111");
