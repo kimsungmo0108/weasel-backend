@@ -18,7 +18,7 @@ public class HistoryService {
   private final HistoryRepository historyRepository;
 
   @Transactional
-  public int deleteHistory(UUID historyId, UUID memberId){
+  public int deleteHistoryByHistoryIdAndMemberId(UUID historyId, UUID memberId){
 
     // 유효성 검사
     History history = historyRepository.findOne(historyId);

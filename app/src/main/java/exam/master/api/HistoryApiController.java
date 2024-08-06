@@ -24,13 +24,13 @@ public class HistoryApiController {
   private final MemberService memberService;
 
   @DeleteMapping("/delete/{historyId}")
-  public ResponseEntity<Integer> deleteMember(@PathVariable("historyId") UUID historyId, HttpSession session) {
+  public ResponseEntity<Integer> delete(@PathVariable("historyId") UUID historyId, HttpSession session) {
 
     // 히스토리에 있는 memberId와 로그인 한 memberId 유효성 검사하기 위해서 member 객체 추출
 //    Member loginUser = (Member) session.getAttribute("loginMember");
     Member loginUser = memberService.findByEmailAndPassword("kim@test", "1111");
 
-    int count = historyService.deleteHistory(historyId, loginUser.getMemberId());
+    int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginUser.getMemberId());
 
     return ResponseEntity.ok(count);
   }
