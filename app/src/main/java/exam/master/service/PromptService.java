@@ -27,7 +27,6 @@ public class PromptService {
   private final HistoryRepository historyRepository;
   private final MemberRepository memberRepository;
   private final MemberService memberService;
-  private final AwsS3Service awsS3Service;
 
   @Transactional
   public PromptDTO addPrompt(PromptDTO promptDTO, UUID historyId,
@@ -57,17 +56,14 @@ public class PromptService {
     Prompt prompt = new Prompt();
     prompt.setPrompt(promptDTO.getPrompt());
     prompt.setHistory(history);
-
+    
     // 테스트
+    prompt.setPhoto("photo");
     prompt.setAnswer("answer");
 
 //    file 스토리지에 업로드 후
-    if (file != null) {
-      String fileName = awsS3Service.uploadFile(file);
-      prompt.setPhoto(fileName);
-    }else{
-      prompt.setPhoto("photo is null!");
-    }
+//    String fileName = "";
+//    prompt.setPhoto(fileName);
 
 //    베드락에 프롬프트와 사진을 보내고 응답을 받는다
 //    String answer = "";
@@ -82,7 +78,8 @@ public class PromptService {
     List<Prompt> promptList = promptRepository.findByHistoryId(historyId);
     List<PromptDTO> promptDTOList = new ArrayList<>();
 
-    for (Prompt prompt : promptList) {
+
+    for(Prompt prompt : promptList){
       promptDTOList.add(convertToPromptDTO(prompt, null));
     }
 
@@ -91,22 +88,22 @@ public class PromptService {
 
   public PromptDTO convertToPromptDTO(Prompt prompt, HistoryDTO historyDTO) {
 
-    if (historyDTO == null) {
+    if(historyDTO == null){
       return PromptDTO.builder()
           .promptId(prompt.getPromptId())
           .prompt(prompt.getPrompt())
           .photo(prompt.getPhoto())
           .answer(prompt.getAnswer())
           .build();
-    } else {
-      // @Builder 애노테이션을 쓰면 빌더 패턴 사용 가능
-      return PromptDTO.builder()
-          .promptId(prompt.getPromptId())
-          .historyDTO(historyDTO)
-          .prompt(prompt.getPrompt())
-          .photo(prompt.getPhoto())
-          .answer(prompt.getAnswer())
-          .build();
+    }else{
+    // @Builder 애노테이션을 쓰면 빌더 패턴 사용 가능
+    return PromptDTO.builder()
+        .promptId(prompt.getPromptId())
+        .historyDTO(historyDTO)
+        .prompt(prompt.getPrompt())
+        .photo(prompt.getPhoto())
+        .answer(prompt.getAnswer())
+        .build();
     }
   }
 
