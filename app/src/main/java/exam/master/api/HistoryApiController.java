@@ -23,6 +23,9 @@ public class HistoryApiController {
   private final HistoryService historyService;
   private final MemberService memberService;
 
+  // 히스토리 목록에서 삭제
+  // 히스토리 삭제 뿐만 아니라, 하위 프롬프트들도 삭제된다.
+  // 프롬프트에 관련된 이미지들도 s3에서 삭제된다.
   @DeleteMapping("/delete/{historyId}")
   public ResponseEntity<Integer> delete(@PathVariable("historyId") UUID historyId, HttpSession session) {
 
