@@ -1,20 +1,49 @@
 spring:
+  config:
+    # 시크릿 매니저 설정
+    import: 'aws-secretsmanager:/secret/prod/weasel'
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
-#    url: jdbc:h2:mem:testdb
-    url: jdbc:h2:tcp://localhost/./weasel
-    username: sa
-    password: 1234
-    driver-class-name: org.h2.Driver
+    # mysql 데이터베이스 이용할 때
+    url: jdbc:mysql://${HOST}:${PORT}/${DATABASE}
+    #    username: ${USERNAME}
+    username: ${mysql-username}
+    password: ${PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    url: ${local-url}
+  #    username: ${local-name}
+  #    password: ${local-pw}
+  #    driver-class-name: org.h2.Driver
 
   jpa:
+    # mysql 데이터베이스 이용할 때
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    #    dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
-        #       show_sql: true
+        show_sql: true
         format_sql: true
 
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace #??? ?? 2.x, hibernate5 ?? ????? ??? ???
-#  org.hibernate.orm.jdbc.bind: trace #??? ?? 3.x, hibernate6
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+    io.awspring.cloud.secretsmanager: DEBUG
+
+cloud:
+  aws:
+    s3:
+      bucket: weasel-images # 버킷 이름
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${accessKey}
+      secretKey: ${secretKey}

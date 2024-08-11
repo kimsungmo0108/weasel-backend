@@ -28,7 +28,7 @@ public class HistoryApiController {
 
     // 히스토리에 있는 memberId와 로그인 한 memberId 유효성 검사하기 위해서 member 객체 추출
 //    Member loginUser = (Member) session.getAttribute("loginMember");
-    Member loginUser = memberService.findByEmailAndPassword("kim@test", "1111");
+    Member loginUser = memberService.findByEmailAndPassword("ksm@test", "1111");
 
     int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginUser.getMemberId());
 

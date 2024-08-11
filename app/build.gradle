@@ -61,6 +61,9 @@ dependencies {
     // AWS Secret Manager 라이브러리
     implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
 
+    //aws s3 연동
+    implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
+
     // json 관련 라이브러리
     implementation("com.google.code.gson:gson:2.10.1")
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1' // 적절한 Jackson 버전

@@ -27,6 +27,7 @@ public class PromptService {
   private final HistoryRepository historyRepository;
   private final MemberRepository memberRepository;
   private final MemberService memberService;
+  private final AwsS3Service awsS3Service;
 
   @Transactional
   public PromptDTO addPrompt(PromptDTO promptDTO, UUID historyId,
@@ -58,12 +59,15 @@ public class PromptService {
     prompt.setHistory(history);
     
     // 테스트
-    prompt.setPhoto("photo");
     prompt.setAnswer("answer");
 
-//    file 스토리지에 업로드 후
-//    String fileName = "";
-//    prompt.setPhoto(fileName);
+    if (file != null) {
+      String fileName = awsS3Service.uploadFile(file);
+      prompt.setPhoto(fileName);
+    }else{
+      prompt.setPhoto("photo is null!");
+    }
+
 
 //    베드락에 프롬프트와 사진을 보내고 응답을 받는다
 //    String answer = "";
