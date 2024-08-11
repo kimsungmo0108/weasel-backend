@@ -51,9 +51,6 @@ dependencies {
     // lombok
     compileOnly 'org.projectlombok:lombok'
 
-    //aws s3 연동
-    implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
-
     // 개발자 도구 템플릿 화면을 고치면 재시작 해야 하지만 이 라이브러리 덕분에 좀 더 수월하다
     // 빌드 => 다시 빌드 => 브라우저 가서 f5
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
