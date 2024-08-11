@@ -1,5 +1,7 @@
 package exam.master.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import exam.master.domain.Member;
 import exam.master.dto.PromptDTO;
 import exam.master.service.MemberService;
@@ -30,13 +32,20 @@ public class PromptApiController {
   private final MemberService memberService;
 
   @PostMapping("/add")
-  public ResponseEntity<PromptDTO> add(@RequestBody PromptDTO promptDTO,
-      @RequestParam(required = false) UUID historyId,
-      @RequestParam(required = false) MultipartFile file,
-      HttpSession session) {
+  public ResponseEntity<PromptDTO> add(
+      // Json 문자열을 받는다.
+      @RequestParam(value = "promptDTO") String promptDTOStr,
+      // json 형태로 요청 하지 않고 요청 하면 요청 데이터에 name과 자바 객체에 변수 이름과 매핑하여 우리의 DTO 객체를 만들준다.
+//      PromptDTO promptDTO,
+      @RequestParam(value = "historyId", required = false) UUID historyId,
+      @RequestParam(value = "file", required = false) MultipartFile file,
+      HttpSession session) throws JsonProcessingException {
+
+    // JSON String ==> 자바 객체로 변환
+    PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
 
 //    Member loginUser = (Member) session.getAttribute("loginMember");
-    Member loginUser = memberService.findByEmailAndPassword("kim@test", "1111");
+    Member loginUser = memberService.findByEmailAndPassword("ksm@test", "1111");
 
     PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginUser.getMemberId(),
         file);
@@ -46,10 +55,17 @@ public class PromptApiController {
 
   @GetMapping("/list/{historyId}")
   public ResponseEntity<List<PromptDTO>> list(
-      @PathVariable(value = "historyId") UUID historyId,
-      HttpSession session) {
+      @PathVariable(value = "historyId") UUID historyId) {
     List<PromptDTO> list = promptService.findByHistoryId(historyId);
     return ResponseEntity.ok(list);
   }
 
+  public PromptDTO convertStringToPromptDTO(String promptDTOStr) throws JsonProcessingException {
+
+    // form으로 보내면 DTO로 받을 수 있지만
+    // 문자열(json)으로 받았을 때 DTO로 변환한다.
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    return objectMapper.readValue(promptDTOStr, PromptDTO.class);
+  }
 }
