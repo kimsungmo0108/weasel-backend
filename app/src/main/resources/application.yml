@@ -35,6 +35,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
     io.awspring.cloud.secretsmanager: DEBUG
+    com.amazonaws: DEBUG
 
 cloud:
   aws:
