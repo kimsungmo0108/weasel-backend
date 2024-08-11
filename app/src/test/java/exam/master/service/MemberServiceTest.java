@@ -37,6 +37,7 @@ public class MemberServiceTest {
     Member member = new Member();
     member.setEmail("kim@test");
     member.setPassword("1111");
+    System.out.println(member);
     //When
     UUID saveId = memberService.join(member);
     //Then
