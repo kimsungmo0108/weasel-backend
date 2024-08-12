@@ -1,5 +1,5 @@
-# FROM openjdk:21-jdk-slim
-FROM chainguard/jre:latest
+FROM openjdk:21-jdk-slim
+# FROM chainguard/jre:latest
 
 
 WORKDIR /app
