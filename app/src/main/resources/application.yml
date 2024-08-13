@@ -1,7 +1,7 @@
 spring:
   config:
     # 시크릿 매니저 설정
-    import: 'optional:aws-secretsmanager:weasel'
+    import: 'optional:aws-secretsmanager:weasel?region=us-east-1'
   servlet:
     multipart:
       enabled: true
