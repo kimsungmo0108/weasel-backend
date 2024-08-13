@@ -1,7 +1,7 @@
 spring:
-  config:
-    # 시크릿 매니저 설정
-    import: 'aws-secretsmanager:arn:aws:secretsmanager:us-east-1:393035689023:secret:/secret/prod/weasel-I4AhIF'
+  # config:
+  #   # 시크릿 매니저 설정
+  #   import: 'aws-secretsmanager:arn:aws:secretsmanager:us-east-1:393035689023:secret:/secret/prod/weasel-I4AhIF'
   servlet:
     multipart:
       enabled: true
@@ -43,8 +43,11 @@ cloud:
       bucket: weasel-images # 버킷 이름
     region:
       static: us-east-1
+    secretsmanager: # 테스트
+      name: "/secret/prod/weasel"
+      region: us-east-1
     stack:
       auto: false
-    credentials:
-      accessKey: ${accessKey}
-      secretKey: ${secretKey}
+    # credentials:
+    #   accessKey: ${accessKey}
+    #   secretKey: ${secretKey}
