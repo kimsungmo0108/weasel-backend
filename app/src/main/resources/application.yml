@@ -11,7 +11,7 @@ spring:
     # mysql 데이터베이스 이용할 때
     url: jdbc:mysql://${HOST}:${PORT}/${DATABASE}
 #    username: ${USERNAME}
-    username: ${mysql-username}
+    username: ${MYSQL_USERNAME}
     password: ${PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: ${local-url}
