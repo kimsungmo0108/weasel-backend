@@ -45,6 +45,6 @@ cloud:
       static: us-east-1
     stack:
       auto: false
-    # credentials:
-    #   accessKey: ${accessKey}
-    #   secretKey: ${secretKey}
+    credentials:
+      accessKey: ${accessKey}
+      secretKey: ${secretKey}
