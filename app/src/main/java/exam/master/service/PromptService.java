@@ -31,13 +31,12 @@ public class PromptService {
 
   @Transactional
   public PromptDTO addPrompt(PromptDTO promptDTO, UUID historyId,
-      UUID memberId, MultipartFile file) {
+      Member member, MultipartFile file) {
 
     History history = new History();
 
-    Member loginUser = memberRepository.findOne(memberId);
-    MemberDTO memberDTO = memberService.convertToDTO(loginUser);
     HistoryDTO historyDTO;
+    MemberDTO memberDTO = memberService.convertToDTO(member);
 
     // 컨트롤러에서 프롬프트에 히스토리id를 검사
     if (historyId == null) {
@@ -49,7 +48,8 @@ public class PromptService {
         history.setTitle(promptDTO.getPrompt());
       }
 
-      history.setMember(loginUser);
+      // 히스토리 id가 null일 때 히스토리를 저장하기 위해 멤버 객체를 주입한다.
+      history.setMember(member);
       history = historyRepository.save(history);
       historyDTO = convertToHistoryDTO(history, memberDTO);
 
