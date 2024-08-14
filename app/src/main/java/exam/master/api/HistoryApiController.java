@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/history")
-@CrossOrigin(origins = "https://weasel.kkamji.net")
+//@CrossOrigin(origins = "https://weasel.kkamji.net")
+@CrossOrigin(origins = "*")
 public class HistoryApiController {
 
   private static final Log log = LogFactory.getLog(PromptApiController.class);

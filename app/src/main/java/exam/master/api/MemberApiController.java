@@ -22,7 +22,8 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://weasel.kkamji.net")
+//@CrossOrigin(origins = "https://weasel.kkamji.net")
+@CrossOrigin(origins = "*")
 @RequestMapping("/v1")
 public class MemberApiController {
 
