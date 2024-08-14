@@ -42,9 +42,13 @@ public class PromptService {
     // 컨트롤러에서 프롬프트에 히스토리id를 검사
     if (historyId == null) {
 
-      // 히스토리 제목을 짧은 형태로 변환
-      // 나중에 바꿔야 함
-      history.setTitle(promptDTO.getPrompt().substring(0, 10) + "...");
+      if(promptDTO.getPrompt().length() >= 20){
+        // 히스토리 제목을 짧은 형태로 변환
+        history.setTitle(promptDTO.getPrompt().substring(0, 20) + "...");
+      }else {
+        history.setTitle(promptDTO.getPrompt());
+      }
+
       history.setMember(loginUser);
       history = historyRepository.save(history);
       historyDTO = convertToHistoryDTO(history, memberDTO);
