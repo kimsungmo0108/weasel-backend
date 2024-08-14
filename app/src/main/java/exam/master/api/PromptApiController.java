@@ -38,18 +38,18 @@ public class PromptApiController {
       // Json 문자열을 받는다.
       @RequestParam(value = "promptDTO") String promptDTOStr,
       // json 형태로 요청 하지 않고 요청 하면 요청 데이터 태그에 name과 자바 객체에 변수 이름과 매핑하여 우리의 DTO 객체를 만들준다.
-//      PromptDTO promptDTO,
+      // PromptDTO promptDTO,
       @RequestParam(value = "historyId", required = false) UUID historyId,
       @RequestParam(value = "file", required = false) MultipartFile file,
       HttpSession session) throws JsonProcessingException {
 
-    // JSON String ==> 자바 객체로 변환
-    PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
+      // JSON String ==> 자바 객체로 변환
+      PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
 
-    Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+      Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-    PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
-        file);
+      PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
+          file);
 
     return ResponseEntity.ok(newPromptDTO);
   }
