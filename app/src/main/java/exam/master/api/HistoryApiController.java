@@ -3,6 +3,7 @@ package exam.master.api;
 import exam.master.domain.Member;
 import exam.master.service.HistoryService;
 import exam.master.service.MemberService;
+import exam.master.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/history")
+@RequestMapping("/v1/history")
 @CrossOrigin(origins = "https://weasel.kkamji.net")
 public class HistoryApiController {
 
   private static final Log log = LogFactory.getLog(PromptApiController.class);
   private final HistoryService historyService;
-  private final MemberService memberService;
 
   @DeleteMapping("/delete/{historyId}")
   public ResponseEntity<Integer> delete(@PathVariable("historyId") UUID historyId, HttpSession session) {
 
     // 히스토리에 있는 memberId와 로그인 한 memberId 유효성 검사하기 위해서 member 객체 추출
-//    Member loginUser = (Member) session.getAttribute("loginMember");
-    Member loginUser = memberService.findByEmailAndPassword("ksm@test", "1111");
+    Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-    int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginUser.getMemberId());
+    int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginMember.getMemberId());
 
     return ResponseEntity.ok(count);
   }

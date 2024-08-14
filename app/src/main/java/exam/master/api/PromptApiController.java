@@ -6,6 +6,7 @@ import exam.master.domain.Member;
 import exam.master.dto.PromptDTO;
 import exam.master.service.MemberService;
 import exam.master.service.PromptService;
+import exam.master.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.UUID;
@@ -25,13 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/prompt")
+@RequestMapping("/v1/prompt")
 @CrossOrigin(origins = "https://weasel.kkamji.net")
 public class PromptApiController {
 
   private static final Log log = LogFactory.getLog(PromptApiController.class);
   private final PromptService promptService;
-  private final MemberService memberService;
 
   @PostMapping("/add")
   public ResponseEntity<PromptDTO> add(
@@ -46,10 +46,9 @@ public class PromptApiController {
     // JSON String ==> 자바 객체로 변환
     PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
 
-//    Member loginUser = (Member) session.getAttribute("loginMember");
-    Member loginUser = memberService.findByEmailAndPassword("ksm@test", "1111");
+    Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-    PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginUser.getMemberId(),
+    PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
         file);
 
     return ResponseEntity.ok(newPromptDTO);
