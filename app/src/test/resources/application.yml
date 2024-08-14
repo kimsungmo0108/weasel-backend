@@ -1,7 +1,10 @@
 spring:
   config:
     # 시크릿 매니저 설정
-    import: 'aws-secretsmanager:/secret/prod/weasel'
+    #    로컬과 서버에서 application.yml 파일에 코드를 수정하지 않고 동작시키기 위해서 optional 옵션 사용
+    import: 'optional:aws-secretsmanager:/secret/prod/weasel'
+  #    import: 'aws-secretsmanager:/secret/prod/weasel'
+  #    import: 'aws-secretsmanager:arn:aws:secretsmanager:us-east-1:393035689023:secret:/secret/prod/weasel-I4AhIF'
   servlet:
     multipart:
       enabled: true
@@ -10,8 +13,10 @@ spring:
   datasource:
     # mysql 데이터베이스 이용할 때
     url: jdbc:mysql://${HOST}:${PORT}/${DATABASE}
+    #    키 이름을 USERNAME을 사용하니까 실제 환경변수에서 값을 읽음
+    #    그래서 MYSQL_USERNAME으로 변경
     #    username: ${USERNAME}
-    username: ${mysql-username}
+    username: ${MYSQL_USERNAME}
     password: ${PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   #    url: ${local-url}
@@ -21,6 +26,7 @@ spring:
 
   jpa:
     # mysql 데이터베이스 이용할 때
+    #    hibernate가 자바에서 사용된 일관된 sql문(jpql)을 각 데이터베이스에 맞게 번역을 시키기 위해서 설정해야 한다.
     database-platform: org.hibernate.dialect.MySQL8Dialect
     #    dialect: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -34,7 +40,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-    io.awspring.cloud.secretsmanager: DEBUG
+#    io.awspring.cloud.secretsmanager: DEBUG
+#    com.amazonaws: DEBUG
 
 cloud:
   aws:
