@@ -41,7 +41,11 @@ public class MemberService {
     }
 
     member.setPassword(memberDTO.getPassword());
-    member.setProfilePhoto(awsS3Service.uploadFile(file));
+    if(file!=null){
+      member.setProfilePhoto(awsS3Service.uploadFile(file));
+    }else{
+      member.setProfilePhoto("photo is null!");
+    }
 
     // 새로운 멤버를 저장
     Member savedMember = memberRepository.save(member);
