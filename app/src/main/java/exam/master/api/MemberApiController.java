@@ -1,5 +1,7 @@
 package exam.master.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import exam.master.domain.Member;
 import exam.master.dto.LogInRequest;
 import exam.master.dto.LoginResponse;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.http.HttpResponse;
 import java.util.Hashtable;
@@ -29,9 +32,16 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    @PostMapping("/member/join")
-    public ResponseEntity<MemberDTO> joinMember(@RequestBody MemberDTO memberDTO) {
-        MemberDTO newMember = memberService.joinMember(memberDTO);
+    @PostMapping("ber/join")
+    public ResponseEntity<MemberDTO> joinMember(@RequestParam(value="memberDTOstr") String memberDTOstr,
+                                                @RequestParam(value = "file", required = false) MultipartFile file)
+    throws JsonProcessingException {
+
+        System.out.println("memberDTOstr : "+ memberDTOstr);
+
+        MemberDTO memberDTO = convertStringToMemberDTO(memberDTOstr);
+        System.out.println("memberDTO : "+ memberDTO);
+        MemberDTO newMember = memberService.joinMember(memberDTO, file);
         return ResponseEntity.ok(newMember);
     }
 
@@ -61,15 +71,17 @@ public class MemberApiController {
 
         Member loginMember = memberService.login(logInRequest);
         if(loginMember == null){
-            return new LoginResponse(-1,"존재하지 않는 회원이거나 비밀번호가 일치하지 않습니다.");
+            return new LoginResponse(-1,"존재하지 않는 회원이거나 비밀번호가 일치하지 않습니다.","");
         }else {
             // 로그인 성공 처리
             // 세션이 있으면 세션 반환, 없으면 신규 세션 생성
             HttpSession session = request.getSession();
             // 세션에 로그인 회원 정보 보관
             session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+            // S3  URL
+            String profilePhoto = loginMember.getProfilePhoto();
 
-            return new LoginResponse(1, "로그인 성공");
+            return new LoginResponse(1, "로그인 성공", profilePhoto);
         }
 
     }
@@ -80,10 +92,17 @@ public class MemberApiController {
         if(session != null){
             session.invalidate(); // 세션 정보가 있으면 정보 삭제
         }
-        return new LoginResponse(1, "로그아웃 성공");
+        return new LoginResponse(1, "로그아웃 성공","");
     }
 
     // 세션 리스트 확인용 코드
     public static Hashtable sessionList = new Hashtable();
+
+    private MemberDTO convertStringToMemberDTO(String memberDTOstr) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(memberDTOstr, MemberDTO.class);
+
+   }
+
 
 }

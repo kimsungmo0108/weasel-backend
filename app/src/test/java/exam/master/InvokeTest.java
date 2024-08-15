@@ -96,18 +96,20 @@ public class InvokeTest {
     }
   public static void main(String[] args) {
 
+        String fileName = "music_q1.png";
+
       try {
 
-          InputStream inputStream = InvokeTest.class.getClassLoader().getResourceAsStream("problem 1.png");
+          InputStream inputStream = InvokeTest.class.getClassLoader().getResourceAsStream(fileName);
           if (inputStream == null) {
               throw new RuntimeException("File not found on classpath");
           }
           byte[] imageBytes = inputStream.readAllBytes();
           // MockMultipartFile 생성 (Spring의 MockMultipartFile 사용)
-          MultipartFile mockFile = new MockMultipartFile("file", "problem 1.png", "image/png", imageBytes);
+          MultipartFile mockFile = new MockMultipartFile("file", fileName, "image/png", imageBytes);
 
           // prompt 정의
-          String prompt = "이미지 문제의 해설을 만들어줘";
+          String prompt = "이미지의 문제를 좋아할만한 사람은 누굴까?";
 
           // invokeModelwithMultipartFile 메서드 호출 및 결과 출력
           String result = invokeModelwithMultipartFile(mockFile, prompt);

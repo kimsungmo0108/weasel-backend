@@ -49,7 +49,7 @@ public class PromptApiController {
 
       Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-      PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
+    PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
           file);
 
     return ResponseEntity.ok(newPromptDTO);
