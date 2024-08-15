@@ -32,7 +32,7 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    @PostMapping("ber/join")
+    @PostMapping("/member/join")
     public ResponseEntity<MemberDTO> joinMember(@RequestParam(value="memberDTOstr") String memberDTOstr,
                                                 @RequestParam(value = "file", required = false) MultipartFile file)
     throws JsonProcessingException {
