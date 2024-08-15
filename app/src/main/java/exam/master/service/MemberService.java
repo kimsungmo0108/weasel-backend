@@ -1,5 +1,6 @@
 package exam.master.service;
 
+import com.amazonaws.services.ec2.model.UpdateSecurityGroupRuleDescriptionsEgressRequest;
 import exam.master.domain.Member;
 import exam.master.dto.LogInRequest;
 import exam.master.dto.MemberDTO;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,19 +26,22 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final HistoryRepository historyRepository;
+  private final AwsS3Service awsS3Service;
 
   // 회원 등록
   @Transactional
-  public MemberDTO joinMember(MemberDTO memberDTO) {
+  public MemberDTO joinMember(MemberDTO memberDTO, MultipartFile file) {
 
     Member member = new Member();
     member.setEmail(memberDTO.getEmail());
-    //중복된 이메일로 가입되있는지 확인
-    validateDuplicateMember(member);
+
+    if(member.getEmail()!=null){
+      //중복된 이메일로 가입되있는지 확인
+      validateDuplicateMember(member);
+    }
 
     member.setPassword(memberDTO.getPassword());
-    member.setStatus(memberDTO.getStatus());
-    member.setProfilePhoto(memberDTO.getProfilePhoto());
+    member.setProfilePhoto(awsS3Service.uploadFile(file));
 
     // 새로운 멤버를 저장
     Member savedMember = memberRepository.save(member);
@@ -178,7 +183,7 @@ public class MemberService {
   // 검증
   public void validateDuplicateMember(Member member){
     Member findMember = memberRepository.findByEmail(member.getEmail());
-    if(!findMember.getEmail().isEmpty()){
+    if(findMember!=null){
       throw new IllegalStateException("이미 존재하는 회원입니다.");
     }
   }
