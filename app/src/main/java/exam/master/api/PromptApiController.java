@@ -27,7 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/prompt")
-@CrossOrigin(origins = "https://weasel.kkamji.net")
+//@CrossOrigin(origins = "https://weasel.kkamji.net")
+@CrossOrigin(origins = "*")
 public class PromptApiController {
 
   private static final Log log = LogFactory.getLog(PromptApiController.class);
