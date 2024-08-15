@@ -120,14 +120,6 @@ public class MemberService {
     return existMember;
   }
 
-  public Member findByEmailAndPassword (String email, String password){
-    Member loginUser = memberRepository.findByEmailAndPassword(email, password);
-
-    // 로그인 하면서 프롬프트 창으로 리다이렉트 하기 때문에 히스토리 리스트를 가져온다
-    loginUser.setHistories(historyRepository.findAllByMemberId(loginUser.getMemberId()));
-    return loginUser;
-  }
-
   private LogInRequest convertToLoginRequest(Member member) {
     LogInRequest logInRequest = new LogInRequest();
 
