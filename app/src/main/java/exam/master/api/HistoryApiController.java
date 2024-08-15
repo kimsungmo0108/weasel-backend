@@ -1,10 +1,14 @@
 package exam.master.api;
 
 import exam.master.domain.Member;
+import exam.master.dto.HistoryDTO;
+import exam.master.dto.MemberDTO;
+import exam.master.dto.PromptDTO;
 import exam.master.service.HistoryService;
 import exam.master.service.MemberService;
 import exam.master.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -12,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +30,7 @@ public class HistoryApiController {
 
   private static final Log log = LogFactory.getLog(PromptApiController.class);
   private final HistoryService historyService;
+  private final MemberService memberService;
 
   @DeleteMapping("/delete/{historyId}")
   public ResponseEntity<Integer> delete(@PathVariable("historyId") UUID historyId, HttpSession session) {
@@ -35,6 +41,17 @@ public class HistoryApiController {
     int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginMember.getMemberId());
 
     return ResponseEntity.ok(count);
+  }
+
+  @GetMapping("/list")
+  public ResponseEntity<List<HistoryDTO>> list(HttpSession session) {
+    Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+    MemberDTO loginMemberDTO = memberService.convertToDTO(loginMember);
+
+    List<HistoryDTO> list = historyService.findByMemberDTO(loginMemberDTO);
+    
+    return ResponseEntity.ok(list);
   }
 
 }

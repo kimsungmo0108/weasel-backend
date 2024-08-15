@@ -3,9 +3,12 @@ package exam.master.service;
 import exam.master.domain.History;
 import exam.master.domain.Member;
 import exam.master.domain.Prompt;
+import exam.master.dto.HistoryDTO;
+import exam.master.dto.MemberDTO;
 import exam.master.repository.HistoryRepository;
 import exam.master.repository.PromptRepository;
 import exam.master.status.MemberStatus;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ public class HistoryService {
   private final PromptRepository promptRepository;
   private final HistoryRepository historyRepository;
   private final AwsS3Service awsS3Service;
+  private final PromptService promptService;
 
   @Transactional
   public int deleteHistoryByHistoryIdAndMemberId(UUID historyId, UUID memberId){
@@ -45,6 +49,19 @@ public class HistoryService {
     }
 
     return count;
+  }
+
+  public List<HistoryDTO> findByMemberDTO (MemberDTO loginMemberDTO){
+
+    List<History> list = historyRepository.findAllByMemberId(loginMemberDTO.getMemberId());
+
+    // DTO로 변환
+    List<HistoryDTO> newList = new ArrayList<>();
+    for(History history : list){
+      newList.add(promptService.convertToHistoryDTO(history, loginMemberDTO));
+    }
+
+    return newList;
   }
 
 }

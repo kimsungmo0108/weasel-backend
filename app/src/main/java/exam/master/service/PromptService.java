@@ -1,5 +1,6 @@
 package exam.master.service;
 
+import exam.master.config.InvokeModel;
 import exam.master.domain.History;
 import exam.master.domain.Member;
 import exam.master.domain.Prompt;
@@ -59,11 +60,7 @@ public class PromptService {
     }
 
     Prompt prompt = new Prompt();
-    prompt.setPrompt(promptDTO.getPrompt());
-    prompt.setHistory(history);
-    
-    // 테스트
-    prompt.setAnswer("answer");
+
 
     if (file != null) {
       String fileName = awsS3Service.uploadFile(file);
@@ -71,6 +68,14 @@ public class PromptService {
     }else{
       prompt.setPhoto("photo is null!");
     }
+
+    // 베드락에서 응답 받아오기
+    // 이미지 파일 프롬포트에서 무조건 받을지, 아니면 없어도 텍스트만 프롬포트로 오면 보낼지 확인 필요
+    String answer = InvokeModel.invokeModel(file, promptDTO.getPrompt());
+    prompt.setAnswer(answer);
+
+    prompt.setPrompt(promptDTO.getPrompt());
+    prompt.setHistory(history);
 
 
 //    베드락에 프롬프트와 사진을 보내고 응답을 받는다
