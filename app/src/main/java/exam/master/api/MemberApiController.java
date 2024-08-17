@@ -45,37 +45,38 @@ public class MemberApiController {
         return ResponseEntity.ok(newMember);
     }
 
-    @GetMapping("/member/view/{id}")
+    @GetMapping("/member/view")
     public ResponseEntity<MemberDTO> Memberv1(
-            @PathVariable("id") UUID id ){
-        MemberDTO memberDTO = memberService.getMemberById(id);
+        HttpSession session ){
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        MemberDTO memberDTO = memberService.getMemberById(member.getMemberId());
          return ResponseEntity.ok(memberDTO);
     }
 
     //PatchMapping는 엔티티의 일부를 바꿀 때, PutMapping는 엔티티 전부를 바꿀 때 사용
-    @PatchMapping("/member/update/{id}")
-    public ResponseEntity<MemberDTO> updateMemberV1(@PathVariable("id") UUID id, @RequestBody  MemberDTO updatedMemberDTO) {
-        MemberDTO memberDTO = memberService.updateMember(id, updatedMemberDTO);
+    @PatchMapping("/member/update")
+    public ResponseEntity<MemberDTO> updateMemberV1(@RequestBody  MemberDTO updatedMemberDTO, HttpSession session) {
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        MemberDTO memberDTO = memberService.updateMember(member.getMemberId(), updatedMemberDTO);
         return ResponseEntity.ok(memberDTO);
     }
 
     //정상적으로 삭제되면 빈객체 반환
-    @DeleteMapping("/member/delete/{id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable UUID id) {
-        memberService.deleteMember(id);
+    @DeleteMapping("/member/delete")
+    public ResponseEntity<Void> deleteMember(HttpSession session) {
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        memberService.deleteMember(member.getMemberId());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody @Valid LogInRequest logInRequest, HttpServletRequest request){
+    public LoginResponse login(@RequestBody @Valid LogInRequest logInRequest, HttpSession session){
 
         Member loginMember = memberService.login(logInRequest);
         if(loginMember == null){
             return new LoginResponse(-1,"존재하지 않는 회원이거나 비밀번호가 일치하지 않습니다.","");
         }else {
             // 로그인 성공 처리
-            // 세션이 있으면 세션 반환, 없으면 신규 세션 생성
-            HttpSession session = request.getSession();
             // 세션에 로그인 회원 정보 보관
             session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
             // S3  URL
