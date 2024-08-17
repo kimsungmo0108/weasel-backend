@@ -44,13 +44,15 @@ public class PromptApiController {
       @RequestParam(value = "file", required = false) MultipartFile file,
       HttpSession session) throws JsonProcessingException {
 
-      // JSON String ==> 자바 객체로 변환
-      PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
+    // JSON String ==> 자바 객체로 변환
+    PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);
 
-      Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    log.debug("prompt add : 세선에서 꺼낸 로그인 정보 >>> "+loginMember.getMemberId());
+    log.debug("prompt add : 세선에서 꺼낸 로그인 정보 >>> "+loginMember.getEmail());
 
     PromptDTO newPromptDTO = promptService.addPrompt(promptDTO, historyId, loginMember,
-          file);
+        file);
 
     return ResponseEntity.ok(newPromptDTO);
   }
