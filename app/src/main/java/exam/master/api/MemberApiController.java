@@ -33,8 +33,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "https://weasel.kkamji.net")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://weasel.kkamji.net", allowCredentials = "true")
+//@CrossOrigin(origins = "*", allowCredentials = "true")
 @RequestMapping("/v1")
 public class MemberApiController {
 
