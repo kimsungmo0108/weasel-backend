@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,9 @@ public class MemberApiController {
     public ResponseEntity<MemberDTO> Memberv1(
         HttpSession session ){
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         MemberDTO memberDTO = memberService.getMemberById(member.getMemberId());
          return ResponseEntity.ok(memberDTO);
     }
