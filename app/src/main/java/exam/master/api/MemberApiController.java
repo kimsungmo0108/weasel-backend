@@ -15,9 +15,11 @@ import jakarta.validation.Valid;
 import java.util.Hashtable;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.mapping.Join;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,14 +33,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://weasel.kkamji.net", allowCredentials = "true")
+@CrossOrigin(origins = {"https://weasel.kkamji.net", "http://localhost:5173"}, allowCredentials = "true")
 //@CrossOrigin(origins = "*", allowCredentials = "true")
 @RequestMapping("/v1")
 public class MemberApiController {
 
-    private static final Log log = LogFactory.getLog(MemberApiController.class);
     // 세션 리스트 확인용 코드
     public static Hashtable sessionList = new Hashtable();
     private final MemberService memberService;
@@ -57,27 +59,33 @@ public class MemberApiController {
         return ResponseEntity.ok(newMember);
     }
 
-    @GetMapping("/member/view/{id}")
-    public ResponseEntity<MemberDTO> Memberv1(
-        @PathVariable("id") UUID id) {
-        MemberDTO memberDTO = memberService.getMemberById(id);
+    @GetMapping("/member/view")
+    public ResponseEntity<MemberDTO> memberV1(
+        HttpSession session ){
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        MemberDTO memberDTO = memberService.getMemberById(member.getMemberId());
         return ResponseEntity.ok(memberDTO);
     }
 
     //PatchMapping는 엔티티의 일부를 바꿀 때, PutMapping는 엔티티 전부를 바꿀 때 사용
-    @PatchMapping("/member/update/{id}")
-    public ResponseEntity<MemberDTO> updateMemberV1(@PathVariable("id") UUID id,
-        @RequestBody MemberDTO updatedMemberDTO) {
-        MemberDTO memberDTO = memberService.updateMember(id, updatedMemberDTO);
+    @PatchMapping("/member/update")
+    public ResponseEntity<MemberDTO> updateMemberV1(@RequestBody  MemberDTO updatedMemberDTO, HttpSession session) {
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        MemberDTO memberDTO = memberService.updateMember(member.getMemberId(), updatedMemberDTO);
         return ResponseEntity.ok(memberDTO);
     }
 
     //정상적으로 삭제되면 빈객체 반환
-    @DeleteMapping("/member/delete/{id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable UUID id) {
-        memberService.deleteMember(id);
+    @DeleteMapping("/member/delete")
+    public ResponseEntity<Void> deleteMember(HttpSession session) {
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        memberService.deleteMember(member.getMemberId());
         return ResponseEntity.noContent().build();
     }
+
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody @Valid LogInRequest logInRequest,

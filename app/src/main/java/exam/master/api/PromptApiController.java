@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/prompt")
-@CrossOrigin(origins = "https://weasel.kkamji.net", allowCredentials = "true")
+@CrossOrigin(origins = {"https://weasel.kkamji.net", "http://localhost:5173"}, allowCredentials = "true")
 //@CrossOrigin(origins = "*", allowCredentials = "true")
 public class PromptApiController {
 
-  private static final Log log = LogFactory.getLog(PromptApiController.class);
   private final PromptService promptService;
 
   @PostMapping("/add")
