@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 //@CrossOrigin(origins = "https://weasel.kkamji.net")
 @CrossOrigin(
-    origins = "*",
+    origins = "http://localhost:5173",
     allowCredentials = "true") // 쿠키 포함 허용
 @RequestMapping("/v1")
 public class MemberApiController {
