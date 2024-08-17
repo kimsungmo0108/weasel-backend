@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/history")
-@CrossOrigin(origins = "https://weasel.kkamji.net", allowCredentials = "true")
+@CrossOrigin(origins = {"https://weasel.kkamji.net", "http://localhost:5173"}, allowCredentials = "true")
 //@CrossOrigin(origins = "*", allowCredentials = "true")
 public class HistoryApiController {
 
-  private static final Log log = LogFactory.getLog(PromptApiController.class);
   private final HistoryService historyService;
   private final MemberService memberService;
 
