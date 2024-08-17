@@ -27,7 +27,9 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 //@CrossOrigin(origins = "https://weasel.kkamji.net")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+    origins = "*",
+    allowCredentials = "true") // 쿠키 포함 허용
 @RequestMapping("/v1")
 public class MemberApiController {
 
@@ -47,7 +49,7 @@ public class MemberApiController {
     }
 
     @GetMapping("/member/view")
-    public ResponseEntity<MemberDTO> Memberv1(
+    public ResponseEntity<MemberDTO> memberV1(
         HttpSession session ){
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (member == null) {
