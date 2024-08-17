@@ -1,7 +1,7 @@
 package exam.master.service;
 
-import com.amazonaws.services.ec2.model.UpdateSecurityGroupRuleDescriptionsEgressRequest;
 import exam.master.domain.Member;
+import exam.master.dto.JoinResponse;
 import exam.master.dto.LogInRequest;
 import exam.master.dto.MemberDTO;
 import exam.master.repository.HistoryRepository;
@@ -30,32 +30,44 @@ public class MemberService {
 
   // 회원 등록
   @Transactional
-  public MemberDTO joinMember(MemberDTO memberDTO, MultipartFile file) {
+  public JoinResponse joinMember(MemberDTO memberDTO, MultipartFile file) {
 
     Member member = new Member();
     member.setEmail(memberDTO.getEmail());
 
-    if(member.getEmail()!=null){
+    Member joinMember = null;
+
+    if (member.getEmail() != null) {
       //중복된 이메일로 가입되있는지 확인
-      validateDuplicateMember(member);
+      joinMember = validateDuplicateMember(member);
     }
 
-    member.setPassword(memberDTO.getPassword());
-    if(file!=null){
-      member.setProfilePhoto(awsS3Service.uploadFile(file));
-    }else{
-      member.setProfilePhoto("photo is null!");
-    }
+    if (joinMember == null) {
+      // joinMember가 null이면 회원가입 진행
+      member.setPassword(memberDTO.getPassword());
+      if (file != null) {
+        member.setProfilePhoto(awsS3Service.uploadFile(file));
+      } else {
+        member.setProfilePhoto("photo is null!");
+      }
 
-    // 새로운 멤버를 저장
-    Member savedMember = memberRepository.save(member);
-    return convertToDTO(savedMember);
+      // 새로운 멤버를 저장
+      Member savedMember = memberRepository.save(member);
+
+      log.debug("회원가입 성공!");
+      return new JoinResponse(1, convertToDTO(savedMember));
+
+    } else {
+      // 회원가입 된 회원이라면 회원 정보 리턴
+      log.debug("이미 등록된 회원");
+      return new JoinResponse(-1, convertToDTO(joinMember));
+    }
   }
 
   // 회원정보 수정
 
   @Transactional
-  public MemberDTO updateMember(UUID memberId, MemberDTO updatedMemberDTO){
+  public MemberDTO updateMember(UUID memberId, MemberDTO updatedMemberDTO) {
     Optional<Member> optionalMember = memberRepository.findById(memberId);
     if (!optionalMember.isPresent()) {
       throw new RuntimeException("Member not found");
@@ -81,8 +93,8 @@ public class MemberService {
   // 회원탈퇴
 
   @Transactional
-  public void deleteMember(UUID memberId){
-    if (!memberRepository.existsById(memberId)){
+  public void deleteMember(UUID memberId) {
+    if (!memberRepository.existsById(memberId)) {
       throw new RuntimeException("존재하지 않는 회원입니다");
     }
     memberRepository.deleteById(memberId);
@@ -90,7 +102,7 @@ public class MemberService {
   // 회원정보 조회
 
 
-  public List<Member> findMember(){
+  public List<Member> findMember() {
     return memberRepository.findAll();
   }
 
@@ -105,17 +117,15 @@ public class MemberService {
 
 
   /**
-   * 로그인 기능
-   *  return member - 로그인 성공
-   *  return null - 로그인 실패
-  */
-  public Member login(LogInRequest req){
+   * 로그인 기능 return member - 로그인 성공 return null - 로그인 실패
+   */
+  public Member login(LogInRequest req) {
 
     // 해당 이메일로 회원인지 확인
     Member checkMember = memberRepository.findByEmail(req.getEmail());
 
     // Email과 일치하는 Member가 없으면 null return
-    if(checkMember.getEmail().isEmpty()){
+    if (checkMember.getEmail().isEmpty()) {
       return null;
     }
 
@@ -140,7 +150,7 @@ public class MemberService {
 
 
   // Member api Response에 사용될 DTO로 변환
-  public MemberDTO convertToDTO(Member member){
+  public MemberDTO convertToDTO(Member member) {
     MemberDTO memberDTO = new MemberDTO();
 
     memberDTO.setMemberId(member.getMemberId());
@@ -154,7 +164,7 @@ public class MemberService {
   /* 아래는 테스트로 썻던 오브젝트 */
   // 등록
   @Transactional
-  public UUID join(Member member){
+  public UUID join(Member member) {
 
     // 중복 회원 검증
     validateDuplicateMember(member);
@@ -164,24 +174,22 @@ public class MemberService {
 
   // 수정
   @Transactional
-  public UUID update(Member member){
+  public UUID update(Member member) {
     memberRepository.update(member);
     return member.getMemberId();
   }
 
   // 탈퇴
   @Transactional
-  public UUID delete(Member member){
+  public UUID delete(Member member) {
     member.setStatus(MemberStatus.DELETE);
     memberRepository.update(member);
     return member.getMemberId();
   }
+
   // 검증
-  public void validateDuplicateMember(Member member){
-    Member findMember = memberRepository.findByEmail(member.getEmail());
-    if(findMember!=null){
-      throw new IllegalStateException("이미 존재하는 회원입니다.");
-    }
+  public Member validateDuplicateMember(Member member) {
+    return memberRepository.findByEmail(member.getEmail());
   }
 
 }
