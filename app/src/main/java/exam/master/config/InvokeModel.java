@@ -60,10 +60,28 @@ public class InvokeModel {
                     }]
                 }""";
 
+      // Prompt Customizing
+      String customizePrompt = """
+        Strictly adhere to the following rules.
+        
+        1. Always respond in Korean.
+        2. Provide the closest answer to the correct one.
+        3. Consider each step carefully and respond thoughtfully.
+        4. Think from an expert's perspective.
+        5. Keep answers short and concise.
+        6. If an option is not the correct answer, explain why it is not correct.
+        7. Explain why the correct answer is correct.
+
+        User Prompt:
+      """;
+      String combinedPrompt = customizePrompt + prompt;
       // 템플릿에 prompt 삽입
       String nativeRequest = nativeRequestTemplate
               .replace("{{image}}", encodedImage)
-              .replace("{{prompt}}", prompt);
+              .replace("{{prompt}}", combinedPrompt);
+      // String nativeRequest = nativeRequestTemplate
+      //         .replace("{{image}}", encodedImage)
+      //         .replace("{{prompt}}", prompt);
 
 
       // 보낼 내용 Message 바이트로 인코딩 후 베드락 런타임에 요청.
