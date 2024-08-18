@@ -8,6 +8,7 @@ import exam.master.service.MemberService;
 import exam.master.service.PromptService;
 import exam.master.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class PromptApiController {
       // PromptDTO promptDTO,
       @RequestParam(value = "historyId", required = false) UUID historyId,
       @RequestParam(value = "file", required = false) MultipartFile file,
-      HttpSession session) throws JsonProcessingException {
+      HttpSession session) throws IOException {
 
     // JSON String ==> 자바 객체로 변환
     PromptDTO promptDTO = convertStringToPromptDTO(promptDTOStr);

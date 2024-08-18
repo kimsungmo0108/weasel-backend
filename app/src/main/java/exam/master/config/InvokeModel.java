@@ -15,13 +15,10 @@ import java.util.Base64;
 
 public class InvokeModel {
 
-  public static String invokeModel(MultipartFile file, String prompt){
+  public static String invokeModel(byte[] imageBytes, String prompt){
     try {
 
       // push test
-
-      // MultipartFile을 바이트 배열로 변환
-      byte[] imageBytes = file.getBytes();
 
       // 이미지 파일을 Base64로 인코딩
       String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
@@ -94,8 +91,6 @@ public class InvokeModel {
 
     } catch (SdkClientException e) {
       System.err.printf("ERROR: Can't invoke '%s'. Reason: %s", e.getMessage());
-      throw new RuntimeException(e);
-    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

@@ -10,6 +10,7 @@ import exam.master.dto.PromptDTO;
 import exam.master.repository.HistoryRepository;
 import exam.master.repository.MemberRepository;
 import exam.master.repository.PromptRepository;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class PromptService {
 
   @Transactional
   public PromptDTO addPrompt(PromptDTO promptDTO, UUID historyId,
-      Member member, MultipartFile file) {
+      Member member, MultipartFile file) throws IOException {
 
     History history = new History();
 
@@ -61,19 +62,24 @@ public class PromptService {
     }
 
     Prompt prompt = new Prompt();
-
+    // 파일을 바이트 배열로 변환
 
     if (file != null) {
+
+      byte[] fileBytes = file.getBytes();
+
       String fileName = awsS3Service.uploadFile(file);
       prompt.setPhoto(fileName);
+
+      // 베드락에서 응답 받아오기
+      // 이미지 파일 프롬포트에서 무조건 받을지, 아니면 없어도 텍스트만 프롬포트로 오면 보낼지 확인 필요
+      String answer = InvokeModel.invokeModel(fileBytes, promptDTO.getPrompt());
+      prompt.setAnswer(answer);
+
     }else{
       prompt.setPhoto("photo is null!");
     }
 
-    // 베드락에서 응답 받아오기
-    // 이미지 파일 프롬포트에서 무조건 받을지, 아니면 없어도 텍스트만 프롬포트로 오면 보낼지 확인 필요
-    String answer = InvokeModel.invokeModel(file, promptDTO.getPrompt());
-    prompt.setAnswer(answer);
 
     prompt.setPrompt(promptDTO.getPrompt());
     prompt.setHistory(history);
