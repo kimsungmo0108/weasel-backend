@@ -39,6 +39,7 @@ public class HistoryApiController {
     // 히스토리에 있는 memberId와 로그인 한 memberId 유효성 검사하기 위해서 member 객체 추출
     Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
+    log.debug("history delete api 호출 >>> " + historyId);
     int count = historyService.deleteHistoryByHistoryIdAndMemberId(historyId, loginMember.getMemberId());
 
     return ResponseEntity.ok(count);
