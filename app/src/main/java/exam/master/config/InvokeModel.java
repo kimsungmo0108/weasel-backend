@@ -1,21 +1,20 @@
 package exam.master.config;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.JSONPointer;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
+@Slf4j
 public class InvokeModel {
 
-  public static String invokeModel(byte[] imageBytes, String prompt){
+  public static String invokeModel(byte[] imageBytes, String prompt) {
     try {
 
       // push test
@@ -37,52 +36,51 @@ public class InvokeModel {
       // img 타입은 png, jpeg 이미지만 가능 3.75 MB 이하의 저용량 파일만 요청할수 있음
 
       var nativeRequestTemplate = """
-                {
-                    "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": 1024,
-                    "temperature": 0.5,
-                    "messages": [{
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "image",
-                                "source": {
-                                    "type": "base64",
-                                    "media_type": "image/png",
-                                    "data": "{{image}}"
-                                }
-                            },
-                            {
-                                "type": "text",
-                                "text": "{{prompt}}"
-                            }
-                        ]
-                    }]
-                }""";
+          {
+              "anthropic_version": "bedrock-2023-05-31",
+              "max_tokens": 1024,
+              "temperature": 0.5,
+              "messages": [{
+                  "role": "user",
+                  "content": [
+                      {
+                          "type": "image",
+                          "source": {
+                              "type": "base64",
+                              "media_type": "image/png",
+                              "data": "{{image}}"
+                          }
+                      },
+                      {
+                          "type": "text",
+                          "text": "{{prompt}}"
+                      }
+                  ]
+              }]
+          }""";
 
       // Prompt Customizing
-      String customizePrompt = """
-        Strictly adhere to the following rules.
-        
-        1. Always respond in Korean.
-        2. Provide the closest answer to the correct one.
-        3. Consider each step carefully and respond thoughtfully.
-        4. Think from an expert's perspective.
-        5. Keep answers short and concise.
-        6. If an option is not the correct answer, explain why it is not correct.
-        7. Explain why the correct answer is correct.
-
-        User Prompt:
-      """;
+      String customizePrompt =
+          "Strictly adhere to the following rules.\\n" +
+              "1. Always respond in Korean.\\n" +
+              "2. Provide the closest answer to the correct one.\\n" +
+              "3. Consider each step carefully and respond thoughtfully.\\n" +
+              "4. Think from an expert's perspective.\\n" +
+              "5. Keep answers short and concise.\\n" +
+              "6. If an option is not the correct answer, explain why it is not correct.\\n" +
+              "7. Explain why the correct answer is correct.\\n" +
+              "User Prompt:\\n\\n";
       String combinedPrompt = customizePrompt + prompt;
+
+      log.debug("Prompt Customizing >>> " + combinedPrompt);
+
       // 템플릿에 prompt 삽입
       String nativeRequest = nativeRequestTemplate
-              .replace("{{image}}", encodedImage)
-              .replace("{{prompt}}", combinedPrompt);
+          .replace("{{image}}", encodedImage)
+          .replace("{{prompt}}", combinedPrompt);
       // String nativeRequest = nativeRequestTemplate
       //         .replace("{{image}}", encodedImage)
       //         .replace("{{prompt}}", prompt);
-
 
       // 보낼 내용 Message 바이트로 인코딩 후 베드락 런타임에 요청.
       var response = client.invokeModel(request -> request

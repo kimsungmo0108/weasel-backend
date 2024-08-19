@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,8 +33,12 @@ public class HistoryService {
     History history = historyRepository.findOne(historyId);
 
     int count = 0;
+    log.debug("count 시작 >>> " + count);
+    log.debug("delete memberId >>> " + memberId);
+    log.debug("delete history.getMember().getMemberId() >>> " + history.getMember().getMemberId());
 
-    if(memberId == history.getMember().getMemberId()){
+    if(memberId.equals(history.getMember().getMemberId())){
+      log.debug("delete 시작!");
 
       // s3에 업로드 되어있는 이미지 삭제
       List<Prompt> deletePromptList = promptRepository.findByHistoryId(historyId);
@@ -40,12 +46,14 @@ public class HistoryService {
         // 지금은 photo is null!이 아니라면 s3에 삭제 요청
         if(!deletePrompt.getPhoto().equals("photo is null!")) {
           awsS3Service.deleteFile(deletePrompt.getPhoto());
+          log.debug("photo delete!");
         }
       }
 
       // 히스토리에 해당하는 모든 데이터 삭제
       count += promptRepository.deletePromptsByHistoryId(historyId);
       count += historyRepository.deleteHistoryByHistoryId(historyId);
+      log.debug("삭제 완료! >>> "+ count);
     }
 
     return count;
