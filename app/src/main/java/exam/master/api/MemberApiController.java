@@ -79,12 +79,18 @@ public class MemberApiController {
       @RequestParam(value = "file", required = false) MultipartFile file,
       HttpSession session) throws JsonProcessingException {
 
+    log.debug("멤버 업데이트 >>> " + updatedMemberDTOstr);
+
     Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
     MemberDTO updatedMemberDTO = convertStringToMemberDTO(updatedMemberDTOstr);
 
     // 비밀번호 암호화
-    updatedMemberDTO.setPassword(passwordEncoder.encode(updatedMemberDTO.getPassword()));
+    if(updatedMemberDTO.getPassword() == null){
+      updatedMemberDTO.setPassword(passwordEncoder.encode(member.getPassword()));
+    }else{
+      updatedMemberDTO.setPassword(passwordEncoder.encode(updatedMemberDTO.getPassword()));
+    }
     MemberDTO memberDTO = memberService.updateMember(member.getMemberId(), updatedMemberDTO, file);
 
     Member newMember = memberService.login(memberDTO.getEmail());
