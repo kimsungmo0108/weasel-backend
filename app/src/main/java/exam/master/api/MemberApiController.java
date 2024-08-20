@@ -87,7 +87,7 @@ public class MemberApiController {
 
     // 비밀번호 암호화
     if(updatedMemberDTO.getPassword() == null){
-      updatedMemberDTO.setPassword(passwordEncoder.encode(member.getPassword()));
+      updatedMemberDTO.setPassword(member.getPassword());
     }else{
       updatedMemberDTO.setPassword(passwordEncoder.encode(updatedMemberDTO.getPassword()));
     }
