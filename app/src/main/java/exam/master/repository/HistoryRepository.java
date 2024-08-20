@@ -23,8 +23,9 @@ public class HistoryRepository {
     return em.find(History.class, historyId);
   }
 
-  public List<History> findAllByMemberId(UUID memberId){
-    return em.createQuery("select h from History h where h.member.id = :memberId", History.class)
+  public List<History> findAllByMemberId(UUID memberId) {
+    // 히스토리 목록을 내림차순으로 정렬
+    return em.createQuery("select h from History h where h.member.id = :memberId order by h.createdDate desc", History.class)
         .setParameter("memberId", memberId)
         .getResultList();
   }
