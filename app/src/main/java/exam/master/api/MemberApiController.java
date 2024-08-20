@@ -75,14 +75,24 @@ public class MemberApiController {
 
   //PatchMapping는 엔티티의 일부를 바꿀 때, PutMapping는 엔티티 전부를 바꿀 때 사용
   @PatchMapping("/member/update")
-  public ResponseEntity<MemberDTO> updateMemberV1(@RequestBody MemberDTO updatedMemberDTO,
+  public ResponseEntity<MemberDTO> updateMemberV1(@RequestParam("updatedMemberDTOstr") String updatedMemberDTOstr,
       @RequestParam(value = "file", required = false) MultipartFile file,
-      HttpSession session) {
+      HttpSession session) throws JsonProcessingException {
+
     Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+    MemberDTO updatedMemberDTO = convertStringToMemberDTO(updatedMemberDTOstr);
 
     // 비밀번호 암호화
     updatedMemberDTO.setPassword(passwordEncoder.encode(updatedMemberDTO.getPassword()));
     MemberDTO memberDTO = memberService.updateMember(member.getMemberId(), updatedMemberDTO, file);
+
+    Member newMember = memberService.login(memberDTO.getEmail());
+
+    // 세션에 업데이트 된 로그인 정보로 새로 저장
+    session.removeAttribute(SessionConst.LOGIN_MEMBER);
+    session.setAttribute(SessionConst.LOGIN_MEMBER, newMember);
+
     return ResponseEntity.ok(memberDTO);
   }
 
