@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberService {
 
   private final MemberRepository memberRepository;
-  private final HistoryRepository historyRepository;
   private final AwsS3Service awsS3Service;
 
   // 회원 등록
@@ -48,7 +47,7 @@ public class MemberService {
       if (file != null) {
         member.setProfilePhoto(awsS3Service.uploadFile(file));
       } else {
-        member.setProfilePhoto("photo is null!");
+        member.setProfilePhoto(null);
       }
 
       // 새로운 멤버를 저장
@@ -67,12 +66,22 @@ public class MemberService {
   // 회원정보 수정
 
   @Transactional
-  public MemberDTO updateMember(UUID memberId, MemberDTO updatedMemberDTO) {
+  public MemberDTO updateMember(UUID memberId, MemberDTO updatedMemberDTO, MultipartFile file) {
     Optional<Member> optionalMember = memberRepository.findById(memberId);
+
     if (!optionalMember.isPresent()) {
       throw new RuntimeException("Member not found");
     }
     Member existingMember = optionalMember.get();
+
+    if(file != null){
+      // 새로운 사진 업로드
+      awsS3Service.uploadFile(file);
+      if(existingMember.getProfilePhoto() != null){
+        // 기존에 존재하는 사진 s3에서 삭제
+        awsS3Service.deleteFile(existingMember.getProfilePhoto());
+      }
+    }
 
     if (updatedMemberDTO.getEmail() != null) {
       existingMember.setEmail(updatedMemberDTO.getEmail());
@@ -93,10 +102,16 @@ public class MemberService {
   // 회원탈퇴
 
   @Transactional
-  public void deleteMember(UUID memberId) {
+  public void deleteMember(UUID memberId, String profilePhoto) {
     if (!memberRepository.existsById(memberId)) {
       throw new RuntimeException("존재하지 않는 회원입니다");
     }
+
+    // s3에서 프로필 사진 삭제
+    if(profilePhoto != null){
+      awsS3Service.deleteFile(profilePhoto);
+    }
+
     memberRepository.deleteById(memberId);
   }
   // 회원정보 조회
@@ -119,20 +134,13 @@ public class MemberService {
   /**
    * 로그인 기능 return member - 로그인 성공 return null - 로그인 실패
    */
-  public Member login(LogInRequest req) {
+  public Member login(String email) {
 
     // 해당 이메일로 회원인지 확인
-    Member checkMember = memberRepository.findByEmail(req.getEmail());
+    Member existMember = memberRepository.findByEmail(email);
 
     // Email과 일치하는 Member가 없으면 null return
-    if (checkMember.getEmail().isEmpty()) {
-      return null;
-    }
-
-    Member existMember = memberRepository.findByEmailAndPassword(req.getEmail(), req.getPassword());
-
-    // 찾아온 Member의 password와 입력된 password가 다르면 null return
-    if (existMember == null || !existMember.getPassword().equals(req.getPassword())) {
+    if (existMember.getEmail().isEmpty()) {
       return null;
     }
 
@@ -174,7 +182,7 @@ public class MemberService {
 
   // 수정
   @Transactional
-  public UUID update(Member member) {
+  public UUID update(Member member, MultipartFile file) {
     memberRepository.update(member);
     return member.getMemberId();
   }
