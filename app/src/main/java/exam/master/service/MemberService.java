@@ -76,7 +76,8 @@ public class MemberService {
 
     if(file != null){
       // 새로운 사진 업로드
-      awsS3Service.uploadFile(file);
+      String photo = awsS3Service.uploadFile(file);
+      existingMember.setProfilePhoto(photo);
       if(existingMember.getProfilePhoto() != null){
         // 기존에 존재하는 사진 s3에서 삭제
         awsS3Service.deleteFile(existingMember.getProfilePhoto());
