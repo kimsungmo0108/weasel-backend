@@ -39,7 +39,7 @@ public class SecurityConfig {
 //            .and()
             .successHandler((request, response, authentication) -> {
               log.debug("소셜 로그인 성공");
-              response.sendRedirect("https://weasel.kkamji.net/social");
+              response.sendRedirect("https://weasel.kkamji.net/home");
             })
             .failureHandler((request, response, authenticationException) -> {
               log.debug("OAuth2 로그인 실패: {}", authenticationException.getMessage());
