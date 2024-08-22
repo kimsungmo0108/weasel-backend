@@ -4,6 +4,7 @@ spring:
     #    로컬과 서버에서 application.yml 파일에 코드를 수정하지 않고 동작시키기 위해서 optional 옵션 사용
     import: 'optional:aws-secretsmanager:/secret/prod/weasel'
   #    import: 'aws-secretsmanager:/secret/prod/weasel'
+  #    import: 'aws-secretsmanager:arn:aws:secretsmanager:us-east-1:393035689023:secret:/secret/prod/weasel-I4AhIF'
   servlet:
     multipart:
       enabled: true
@@ -22,7 +23,6 @@ spring:
   #    username: ${local-name}
   #    password: ${local-pw}
   #    driver-class-name: org.h2.Driver
-
   jpa:
     # mysql 데이터베이스 이용할 때
     #    hibernate가 자바에서 사용된 일관된 sql문(jpql)을 각 데이터베이스에 맞게 번역을 시키기 위해서 설정해야 한다.
@@ -34,12 +34,21 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${oauth2-clientId}
+            clientSecret: ${oauth2-clientSecret}
+            redirectUri: ${oauth2-redirectUri}
+            scope:
+              - email
+              - profile
 logging:
   level:
-    #    org.hibernate.SQL: debug
-    #    org.hibernate.type: trace
-    root: INFO
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
     exam.master: DEBUG
 #    io.awspring.cloud.secretsmanager: DEBUG
 #    com.amazonaws: DEBUG

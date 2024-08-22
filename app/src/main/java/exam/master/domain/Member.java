@@ -2,6 +2,8 @@ package exam.master.domain;
 
 import static exam.master.status.MemberStatus.USER;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import exam.master.security.Provider;
 import exam.master.status.MemberStatus;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -39,7 +41,11 @@ public class Member {
   // mappedBy = "member" => 읽기 가능
   // 단방향 + 단방향 접근이 가능하다 한 쪽을 막는 옵션이다
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+  @JsonIgnore // JSON 직렬화 시 이 필드 무시
   private List<History> histories = new ArrayList<>();
+
+  @Column(name = "provider")
+  private String provider;
 
   public Member() {
     // member 객체를 만들면 상태 자동 등록

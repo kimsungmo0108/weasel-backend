@@ -1,3 +1,7 @@
+app:
+  auth:
+    tokenSecret: mymymymymymymymymymymymymymymymymymymymymy
+    tokenExpirationMsec: 864000000 # 토큰 유효시간
 spring:
   config:
     # 시크릿 매니저 설정
@@ -23,7 +27,6 @@ spring:
   #    username: ${local-name}
   #    password: ${local-pw}
   #    driver-class-name: org.h2.Driver
-
   jpa:
     # mysql 데이터베이스 이용할 때
     #    hibernate가 자바에서 사용된 일관된 sql문(jpql)을 각 데이터베이스에 맞게 번역을 시키기 위해서 설정해야 한다.
@@ -35,11 +38,24 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${oauth2-clientId}
+            clientSecret: ${oauth2-clientSecret}
+#            redirectUri: ${oauth2-redirectUri}
+            redirectUri: http://localhost:8080/oauth2/callback/google
+            scope:
+              - email
+              - profile
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+    org.springframework.security: DEBUG
+    io.jsonwebtoken: TRACE
 #    io.awspring.cloud.secretsmanager: DEBUG
 #    com.amazonaws: DEBUG
 
