@@ -30,7 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     log.debug(member);
 
-    return new MemberUserDetails(member);
+    return MemberUserDetails.create(member);
   }
 }
 

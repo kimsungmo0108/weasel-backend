@@ -1,6 +1,7 @@
 package exam.master.repository;
 
 import exam.master.domain.Member;
+import exam.master.security.Provider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -10,10 +11,13 @@ import java.util.UUID;
 
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository // 스프링 빈으로 등록
 @RequiredArgsConstructor
+@Slf4j
 public class MemberRepository {
 
   // 엔티티 메니저 팩토리 주입
@@ -23,6 +27,7 @@ public class MemberRepository {
   @PersistenceContext // 엔티티 매니저 주입
   private final EntityManager em;
 
+  @Transactional
   public Member save(Member member){
     if (member.getMemberId() == null) {
       em.persist(member);
@@ -78,6 +83,21 @@ public class MemberRepository {
     } catch (NoResultException e) {
       return null;
     }
+  }
+
+  public Optional<Member> findByEmailAndProvider(String email, String provider){
+
+    List<Member> members = em.createQuery("select m from Member m where m.email = :email and m.provider = :provider", Member.class)
+        .setParameter("email", email)
+        .setParameter("provider", provider)
+        .getResultList();
+
+    if (members.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.ofNullable(members.getFirst());
+
   }
 }
 
