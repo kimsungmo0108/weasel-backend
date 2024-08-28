@@ -11,3 +11,6 @@
 
 ### Infra
 <img src="https://img.shields.io/badge/aws secretsmanager-DD344C?style=for-the-badge&logo=awssecretsmanager&logoColor=white"/> <img src="https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"/> <img src="https://img.shields.io/badge/aws bedrock-525DDC?style=for-the-badge&logo=awsbedrock&logoColor=white"/>
+
+## Bedrock Workflow
+![image](https://github.com/user-attachments/assets/18d56c86-cdc5-4886-b844-faeed4410abd)
